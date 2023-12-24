@@ -1,0 +1,6 @@
+numpy==1.26.2
+pandas==2.1.4
+pandas-ta==0.3.14b0
+streamlit==1.29.0
+yfinance==0.2.33
+
