@@ -11,7 +11,7 @@ st.set_page_config(
     page_icon="📊",
     layout='wide',
 )
-st.title('This is Bob')
+st.title('Ask Bob')
 
 
 def format_number_abbreviated(number):
@@ -119,7 +119,7 @@ with st.expander(f'{ticker.upper()} - Stock Information', expanded=True):
 
 # Company Business Summary
 with st.expander(f'{ticker.upper()} - Business Summary', expanded=False):
-    if 'company_info' in stock_info:
+    if stock_info and 'company_info' in stock_info and stock_info['company_info']:
         st.write(stock_info['company_info'].get("longBusinessSummary"))
     else:
         st.write("No company information available.")
