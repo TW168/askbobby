@@ -11,7 +11,7 @@ st.set_page_config(
     page_icon="📊",
     layout='wide',
 )
-st.title('Ask Bob')
+st.title('Ask Bobby')
 
 
 def format_number_abbreviated(number):
