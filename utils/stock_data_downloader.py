@@ -2,6 +2,7 @@
 # import pandas as pd
 import streamlit as st
 import yfinance as yf
+import requests
 
 class StockDataDownloader:
     def __init__(self):
@@ -20,15 +21,13 @@ class StockDataDownloader:
             ticker_obj = yf.Ticker(ticker)
             ticker_info = ticker_obj.info
 
-            if ticker_info is None:
-                st.error(f"No information found for ticker symbol: {ticker}")
-                return None, None
-            else:
-                return ticker_obj, ticker_info
+            return ticker_obj, ticker_info
 
+        except requests.exceptions.HTTPError as e:
+            st.error(f"HTTP error occurred while fetching information for {ticker}")
+            return None, None
         except Exception as e:
-            st.error(
-                f"An error occurred while fetching information for {ticker}:")
+            print(f"An error occurred while fetching information for {ticker}")
             return None, None
 
     def format_number_abbreviated(self, number):

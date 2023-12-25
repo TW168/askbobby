@@ -7,10 +7,12 @@ from utils.technical_indicators import TechnicalIndicators
 
 # Set up the Streamlit page
 st.set_page_config(
-    page_title="BorB",
+    page_title="Bob",
     page_icon="📊",
     layout='wide',
 )
+st.title('This is Bob')
+
 
 def format_number_abbreviated(number):
     """
@@ -44,6 +46,7 @@ def format_number_abbreviated(number):
         st.error(f"An error occurred while formatting the number: {e}")
         return "Error"
 
+
 # Create an instance of StockDataDownloader
 data_downloader = StockDataDownloader()
 
@@ -59,21 +62,27 @@ with st.expander('Get Stock Data', expanded=True):
 with st.expander(f'{ticker.upper()} - Stock Information', expanded=True):
     try:
         # Use download_stock_info method
-        stock_info = data_downloader.download_stock_info(ticker, start_date, end_date)
+        stock_info = data_downloader.download_stock_info(
+            ticker, start_date, end_date)
 
-        if stock_info['data'] is not None:
-            # Display stock data
-           # st.dataframe(stock_info['data'], use_container_width=True)
+        if 'data' in stock_info and stock_info['data'] is not None:
+            # Check if 'company_info' is in stock_info
+            if 'company_info' in stock_info:
+                # Display company information
+                col1, col2, col3, col4 = st.columns(4)
+                with col1:
+                    col1.metric('Company Name', stock_info['company_info'].get(
+                        'shortName', 'N/A'))
+                    col1.metric(
+                        'Sector', stock_info['company_info'].get('sector'))
+                    col1.metric(
+                        'Exchange', stock_info['company_info'].get("exchange"))
+                    col1.metric(
+                        'Currency', stock_info['company_info'].get('currency'))
+            else:
+                st.write("No company information available.")
 
-            # Display company information
-            col1, col2, col3, col4 = st.columns(4)
-            with col1:
-                col1.metric('Company Name', stock_info['company_info'].get('shortName'))
-                col1.metric('Sector', stock_info['company_info'].get('sector'))
-                col1.metric('Exchange', stock_info['company_info'].get("exchange"))
-                col1.metric('Currency', stock_info['company_info'].get('currency'))
-
-            # Stock Valuation Measures 
+            # Stock Valuation Measures
             with col2:
                 col2.metric('Beta', stock_info['company_info'].get('beta'))
                 market_cap = stock_info['valuation_measures'].get('marketCap')
@@ -82,19 +91,25 @@ with st.expander(f'{ticker.upper()} - Stock Information', expanded=True):
 
             # Yahoo! recommendation
             with col3:
-                col3.metric('Yahoo! Recommendation Mean', stock_info['company_info'].get("recommendationMean"))
-                col3.metric('Yahoo! Recommend', stock_info['company_info'].get('recommendationKey'))
+                col3.metric('Yahoo! Recommendation Mean',
+                            stock_info['company_info'].get("recommendationMean"))
+                col3.metric('Yahoo! Recommend',
+                            stock_info['company_info'].get('recommendationKey'))
 
             # Stock Financial information
             with col4:
-                total_cash = stock_info['financial_highlights'].get('totalCash')
+                total_cash = stock_info['financial_highlights'].get(
+                    'totalCash')
                 formatted_total_cash = format_number_abbreviated(total_cash)
                 col4.metric('Total Cash', formatted_total_cash)
-                total_debt_to_equity = stock_info['financial_highlights'].get('debtToEquity')
-                formatted_total_debt_to_equity = f"{total_debt_to_equity:.2f}%" if total_debt_to_equity is not None else "N/A"
-                col4.metric('Total Debt/Equity (mrq)', formatted_total_debt_to_equity)
+                total_debt_to_equity = stock_info['financial_highlights'].get(
+                    'debtToEquity')
+                formatted_total_debt_to_equity = f"{total_debt_to_equity:.1f}%" if total_debt_to_equity is not None else "N/A"
+                col4.metric('Total Debt/Equity (mrq)',
+                            formatted_total_debt_to_equity)
         else:
-            st.warning(f"No information available for the stock with ticker '{ticker}'.")
+            st.warning(
+                f"No information available for the stock with ticker '{ticker}'.")
 
     except Exception as e:
         st.error(f"An error occurred while fetching stock information: {e}")
@@ -104,54 +119,61 @@ with st.expander(f'{ticker.upper()} - Stock Information', expanded=True):
 
 # Company Business Summary
 with st.expander(f'{ticker.upper()} - Business Summary', expanded=False):
-    if stock_info['company_info'] is not None:
+    if 'company_info' in stock_info:
         st.write(stock_info['company_info'].get("longBusinessSummary"))
+    else:
+        st.write("No company information available.")
+
 
 # Expander for displaying stock closing price and indicators
 with st.expander(f'{ticker.upper()} - Stock Closing Price and Indicators', expanded=True):
-    # Create an instance of ChartPlotter
-    plotter = ChartPlotter()
+    # Check if 'data' is in stock_info
+    if 'data' in stock_info and stock_info['data'] is not None:
+        # Create an instance of ChartPlotter
+        plotter = ChartPlotter()
 
-    # Plot stock data using Plotly
-    plotter.plot_stock_data(stock_info['data'])
+        # Plot stock data using Plotly
+        plotter.plot_stock_data(stock_info['data'])
 
-    # Use the TechnicalIndicators class to calculate indicators
-    technical_indicators = TechnicalIndicators()
-    df_with_indicators = technical_indicators.calculate_indicators(stock_info['data'])
+        # Use the TechnicalIndicators class to calculate indicators
+        technical_indicators = TechnicalIndicators()
+        df_with_indicators = technical_indicators.calculate_indicators(stock_info['data'])
 
-    # Use the ChartPlotter class to plot Bollinger Bands
-    if df_with_indicators is not None and not df_with_indicators.empty:
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            # Extract Bollinger Bands data from df_with_indicators
-            bollinger_bands_data = df_with_indicators[['Date', 'Close', 'BBU_20_2.0', 'BBL_20_2.0']]
-            # Create a line chart for Bollinger Bands
-            bollinger_fig = plotter.plot_bollinger_bands(bollinger_bands_data)
-            # Show the plot using Streamlit
-            st.plotly_chart(bollinger_fig)
-            
-            # Extract RSI data from df_with_indicators
-            rsi_data = df_with_indicators[['Date', 'Close', 'RSI_14']]
-            rsi_fig = plotter.plot_rsi_and_close(rsi_data)
-            # Show the plot using Streamlit
-            st.plotly_chart(rsi_fig)
-            st.markdown(body="RSI readings range from zero to 100, with readings above 70 generally interpreted as indicating overbought conditions and readings below 30 indicating oversold conditions.")
+        # Use the ChartPlotter class to plot Bollinger Bands
+        if df_with_indicators is not None and not df_with_indicators.empty:
+            col1, col2 = st.columns(2)
 
-        with col2:
-            # Extract MACD data from df_with_indicators
-            macd_data = df_with_indicators[['Date', 'Close', 'MACD_12_26_9', 'MACDh_12_26_9', 'MACDs_12_26_9']]
-            macd_fig = plotter.plot_macd_indicators(macd_data)
-            # Show the plot using Streamlit
-            st.plotly_chart(macd_fig)
-            st.markdown(body="When the MACD yellow line crosses above the signal red line (to buy) or falls below it (to sell).", unsafe_allow_html=True)
+            with col1:
+                # Extract Bollinger Bands data from df_with_indicators
+                bollinger_bands_data = df_with_indicators[['Date', 'Close', 'BBU_20_2.0', 'BBL_20_2.0']]
+                # Create a line chart for Bollinger Bands
+                bollinger_fig = plotter.plot_bollinger_bands(bollinger_bands_data)
+                # Show the plot using Streamlit
+                st.plotly_chart(bollinger_fig)
 
-            # Extract Moving Average data from df_with_indicators
-            sma_data = df_with_indicators[['Date', 'Close', 'SMA_50', 'SMA_200']]
-            # Create a line chart for Moving Averages
-            sma_fig = plotter.plot_simple_moving_averages(sma_data)
-            # Show the plot using Streamlit
-            st.plotly_chart(sma_fig)
+                # Extract RSI data from df_with_indicators
+                rsi_data = df_with_indicators[['Date', 'Close', 'RSI_14']]
+                rsi_fig = plotter.plot_rsi_and_close(rsi_data)
+                # Show the plot using Streamlit
+                st.plotly_chart(rsi_fig)
+                st.markdown(body="RSI readings range from zero to 100, with readings above 70 generally interpreted as indicating overbought conditions and readings below 30 indicating oversold conditions.")
 
+            with col2:
+                # Extract MACD data from df_with_indicators
+                macd_data = df_with_indicators[['Date', 'Close', 'MACD_12_26_9', 'MACDh_12_26_9', 'MACDs_12_26_9']]
+                macd_fig = plotter.plot_macd_indicators(macd_data)
+                # Show the plot using Streamlit
+                st.plotly_chart(macd_fig)
+                st.markdown(body="When the MACD yellow line crosses above the signal red line (to buy) or falls below it (to sell).", unsafe_allow_html=True)
+
+                # Extract Moving Average data from df_with_indicators
+                sma_data = df_with_indicators[['Date', 'Close', 'SMA_50', 'SMA_200']]
+                # Create a line chart for Moving Averages
+                sma_fig = plotter.plot_simple_moving_averages(sma_data)
+                # Show the plot using Streamlit
+                st.plotly_chart(sma_fig)
+
+        else:
+            st.warning("No data available for plotting.")
     else:
-        st.warning("No data available for plotting.")
+        st.warning("No data available.")

@@ -1,9 +1,9 @@
 # chart_plotter.py
 import streamlit as st
-import yfinance as yf
+# import yfinance as yf
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import pandas as pd
+# import pandas as pd
 from datetime import datetime, timedelta
 
 
