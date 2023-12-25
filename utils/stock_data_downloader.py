@@ -27,7 +27,7 @@ class StockDataDownloader:
             st.error(f"HTTP error occurred while fetching information for {ticker}")
             return None, None
         except Exception as e:
-            print(f"An error occurred while fetching information for {ticker}")
+            st.error(f"An error occurred while fetching information for {ticker}")
             return None, None
 
     def format_number_abbreviated(self, number):

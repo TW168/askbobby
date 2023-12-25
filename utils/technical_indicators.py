@@ -20,9 +20,8 @@ class TechnicalIndicators:
             # Ensure that the DataFrame is sorted by date
             data = data.sort_values(by='Date')
 
-            # Calculate technical indicators
-            # Define your Custom Strategy
-            custom_strategy = ta.Strategy(
+            # Define sample strategy 
+            sample_strategy_definition = ta.Strategy(
                 name="Custom Strategy",
                 description="SMA 50,200, BBANDS, RSI, MACD, Volume SMA 20, OHLC4, EMA, DONCHIAN, and ADX",
                 ta=[
@@ -39,8 +38,8 @@ class TechnicalIndicators:
                 ]
             )
 
-            # Apply your Custom Strategy
-            data.ta.strategy(custom_strategy, append=True)
+            # Apply sample_strategy_definition
+            data.ta.strategy(sample_strategy_definition, append=True)
             return data
 
         except Exception as e:
