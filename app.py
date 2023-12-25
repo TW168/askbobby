@@ -7,7 +7,7 @@ from utils.technical_indicators import TechnicalIndicators
 
 # Set up the Streamlit page
 st.set_page_config(
-    page_title="Bob",
+    page_title="Bobby",
     page_icon="📊",
     layout='wide',
 )
