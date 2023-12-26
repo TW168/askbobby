@@ -177,4 +177,6 @@ with st.expander(f'{ticker.upper()} - Stock Closing Price and Indicators', expan
             st.warning("No data available for plotting.")
     else:
         st.warning("No data available.")
-st.markdown("<small><sub>*** Disclaimer *** This is for entertainment only, not a financial advice. Use this at your own risk.</sub></small>", unsafe_allow_html=True)
+st.markdown("<small><sub>*** Disclaimer *** This is for entertainment only, not financial advice. Use this at your own risk.</sub></small>", unsafe_allow_html=True)
+
+st.dataframe(df_with_indicators)
