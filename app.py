@@ -4,6 +4,7 @@ import streamlit as st
 from utils.stock_data_downloader import StockDataDownloader
 from utils.chart_plotter import ChartPlotter
 from utils.technical_indicators import TechnicalIndicators
+from utils.stock_price_predictor import StockPricePredictor
 
 # Set up the Streamlit page
 st.set_page_config(
@@ -164,7 +165,7 @@ with st.expander(f'{ticker.upper()} - Stock Closing Price and Indicators', expan
                 macd_fig = plotter.plot_macd_indicators(macd_data)
                 # Show the plot using Streamlit
                 st.plotly_chart(macd_fig)
-                st.markdown(body="When the MACD yellow line crosses above the signal red line (to buy) or falls below it (to sell).", unsafe_allow_html=True)
+                st.markdown(body="When the MACD yellow line crosses above the signal red line (to buy) or falls below red line (to sell).", unsafe_allow_html=True)
 
                 # Extract Moving Average data from df_with_indicators
                 sma_data = df_with_indicators[['Date', 'Close', 'SMA_50', 'SMA_200']]
@@ -178,5 +179,11 @@ with st.expander(f'{ticker.upper()} - Stock Closing Price and Indicators', expan
     else:
         st.warning("No data available.")
 st.markdown("<small><sub>*** Disclaimer *** This is for entertainment only, not financial advice. Use this at your own risk.</sub></small>", unsafe_allow_html=True)
+
+# Create an instance of StockPricePredictor
+predictor = StockPricePredictor()
+with st.expander(f'{ticker.upper()} - Stock Predictor', expanded=True):
+    rtn_data = predictor.prepare_data(df_with_indicators)
+    st.dataframe(rtn_data)
 
 # st.dataframe(df_with_indicators)
