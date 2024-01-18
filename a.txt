@@ -1,0 +1,8 @@
+i have files in utils folder
+__init__.py
+chart_plotter.py
+stock_data_downloader.py
+stock_price_predictor.py
+technical_indicators.py
+in the root folder is app.py
+
