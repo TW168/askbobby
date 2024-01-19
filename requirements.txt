@@ -4,6 +4,6 @@ pandas_ta==0.3.14b0
 plotly==5.18.0
 Requests==2.31.0
 scikit_learn==1.4.0
-streamlit==1.29.0
+streamlit==1.30.0
 tensorflow==2.15.0.post1
 yfinance==0.2.33
