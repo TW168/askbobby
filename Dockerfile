@@ -1,22 +1,23 @@
-FROM python:3.9.18-slim
+# Use a smaller base image
+FROM python:3.9.18-alpine
 
-#Expose port 8080
+# Expose port 8080
 EXPOSE 8080
 
-#Optional - install git to fetch packages directly from github
-RUN apt-get update && apt-get install
+# Install git
+RUN apk add --no-cache git
 
-#Copy Requirements.txt file into app directory
+# Copy Requirements.txt file into app directory
 COPY requirements.txt app/requirements.txt
 
-#install all requirements in requirements.txt
-RUN pip install -r app/requirements.txt
+# Install all requirements in requirements.txt
+RUN pip install --no-cache-dir -r app/requirements.txt
 
-#Copy all files in current directory into app directory
+# Copy all files in current directory into app directory
 COPY . /app
 
-#Change Working Directory to app directory
+# Change Working Directory to app directory
 WORKDIR /app
 
-#Run the application
-ENTRYPOINT ["streamlit", "run", "app.py"]
+# Run the application
+ENTRYPOINT ["streamlit", "run", "app.py", "--server.port=8080", "--server.address=0.0.0.0"]

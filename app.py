@@ -184,6 +184,6 @@ st.markdown("<small><sub>*** Disclaimer *** This is for entertainment only, not 
 predictor = StockPricePredictor()
 with st.expander(f'{ticker.upper()} - Stock Predictor', expanded=True):
     rtn_data = predictor.prepare_data(df_with_indicators)
-    st.dataframe(rtn_data)
+    #st.dataframe(rtn_data)
 
 # st.dataframe(df_with_indicators)
