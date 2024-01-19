@@ -56,7 +56,7 @@ with st.expander('Get Stock Data', expanded=True):
     # Get user input
     ticker = st.text_input('Ticker ', value='AAPL')
     start_date = st.date_input(
-        'Start Date', value=pd.to_datetime('1900-01-01'))
+        'Start Date', value=pd.to_datetime('1940-01-01'))
     end_date = st.date_input('End Date', value=pd.to_datetime('today'))
 
 # Expander for displaying stock information
